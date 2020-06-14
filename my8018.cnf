@@ -1,0 +1,160 @@
+[mysql]
+auto-rehash
+prompt="\\u@\\h [\\d]>"
+
+[mysqld]
+character-set-server=utf8mb4
+port=8018
+server-id=868018
+basedir=/usr/local/mysql5730
+datadir=/home/louis/db8018/data
+tmpdir= /home/louis/db8018/tmp
+socket=/tmp/mysql8018.sock
+binlog_format=row
+event_scheduler = 0
+
+
+###server 层相关配置
+table_open_cache=2048
+thread_stack=262144
+table_definition_cache = 2048
+open_files_limit=65536
+
+#--logfile--#
+pid-file=/home/louis/db8018/data/mysqld.pid
+log-error=/home/louis/db8018/logs/error.log
+slow_query_log_file=/home/louis/db8018/logs/slow.log
+general_log_file=/home/louis/db8018/logs/general.log
+slow_query_log           = 1
+long-query-time          = 1
+secure_file_priv = /home/louis/db8018/tmp/
+skip-name-resolve
+skip-symbolic-links
+skip-external-locking
+skip-slave-start
+table_open_cache = 5000
+
+
+#---connect setting---#
+back_log                 = 1024
+max_connections          = 5000
+max_connect_errors       = 10000
+connect-timeout          = 10
+wait-timeout             = 800
+interactive-timeout      = 800
+slave-net-timeout        = 60
+net_read_timeout         = 30
+net_write_timeout        = 60
+net_retry_count          = 10
+net_buffer_length        = 16384
+thread_stack             = 512K
+thread_cache_size        = 500
+
+
+#---参数值设置---#
+default-time-zone        = system
+log_timestamps=system
+max_allowed_packet       = 512M
+tmp_table_size           = 2M
+max_heap_table_size      = 2M
+key_buffer_size                 = 2M
+sort_buffer_size                = 2M
+read_buffer_size                = 2M
+join_buffer_size                = 2M
+read_rnd_buffer_size            = 2M
+bulk_insert_buffer_size         = 2M
+
+
+#---半同步复制---#
+#plugin_dir=/usr/local/mysql5.7.27/lib/plugin
+#plugin_load = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
+#rpl_semi_sync_master_enabled=1
+#rpl_semi_sync_slave_enabled=1
+#rpl_semi_sync_master_timeout=5000
+
+##以下参数是5.7 新加入的
+#rpl_semi_sync_master_wait_point=AFTER_SYNC
+#rpl_semi_sync_master_wait_for_slave_count=1
+
+
+#---binlog---#
+binlog_format            = row
+log-bin                  =/home/louis/db8018/logs/mysql-bin
+log-bin-index            =/home/louis/db8018/logs/mysql-bin.index
+relay-log                =/home/louis/db8018/logs/relay-log
+relay-log-index          =/home/louis/db8018/logs/relay-log.index
+log-slave-updates
+max_binlog_size          = 128M
+max_relay_log_size       = 128M
+expire_logs_days         = 5
+binlog_cache_size        = 16M
+sync_binlog=1
+
+#--- Innodb ---#
+innodb_file_per_table
+transaction_isolation           = REPEATABLE-READ
+innodb_buffer_pool_size         = 512M
+innodb_buffer_pool_instances    = 1
+innodb_data_home_dir            = /home/louis/db8018/data
+innodb_data_file_path           = ibdata1:512M:autoextend
+innodb_undo_directory           = /home/louis/db8018/data
+innodb_undo_tablespaces = 4       #128 个回滚段放在4个tablespaces中
+innodb_max_dirty_pages_pct      = 75
+innodb_lock_wait_timeout        = 50
+innodb_flush_method            = O_DIRECT
+innodb_change_buffering         = all
+innodb_adaptive_flushing        = 1
+innodb_io_capacity              = 1000
+innodb_old_blocks_time          = 1000
+
+
+#--- 后台线程 ---#
+innodb_read_io_threads          = 4
+innodb_write_io_threads         = 4
+innodb_purge_threads            = 4
+
+
+#---redo log---#
+innodb_flush_log_at_trx_commit  = 1
+innodb_log_buffer_size          = 16M
+innodb_log_file_size            = 128M
+innodb_log_files_in_group       = 3
+innodb_rollback_on_timeout=0
+
+performance_schema                                                      =on
+performance_schema_consumer_global_instrumentation                      =on 
+performance_schema_consumer_thread_instrumentation                      =on 
+performance_schema_consumer_events_stages_current                       =on 
+performance_schema_consumer_events_stages_history                       =on 
+performance_schema_consumer_events_stages_history_long                  =off
+performance_schema_consumer_statements_digest                           =on 
+performance_schema_consumer_events_statements_current                   =on 
+performance_schema_consumer_events_statements_history                   =on 
+performance_schema_consumer_events_statements_history_long              =off
+performance_schema_consumer_events_waits_current                        =on 
+performance_schema_consumer_events_waits_history                        =on 
+performance_schema_consumer_events_waits_history_long                   =off
+
+
+#GTID
+master_info_repository=TABLE
+relay_log_info_repository=TABLE
+relay-log-recovery=on
+relay_log_purge = 1
+
+gtid_mode=on
+enforce-gtid-consistency=on
+binlog_gtid_simple_recovery=1
+log-slave-updates
+binlog_checksum=NONE
+##并行复制
+slave_parallel_workers= 4
+slave_parallel_type=LOGICAL_CLOCK
+slave_preserve_commit_order=on
+binlog_transaction_dependency_tracking=writeset
+binlog_transaction_dependency_history_size=25000
+transaction_write_set_extraction=XXHASH64
+
+[client]
+default-character-set=utf8mb4
+
